@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'profile.css' %}">
+</head>
+<body style="display: flex; gap: 100px; justify-content: center">
+    <div class="profile">
+        <div style="display: flex; gap: 40px">
+            <h1 class="profile-title">My Profile</h1>
+            <form class="edit-profile-form" style="margin: 20px" method="GET" action="{% url 'edit_profile' profile.id %}">
+                <button class="edit-profile-button" type="submit">Edit Profile</button>
+            </form>
+        </div>
+        <h2 class="username">{{ profile.User.username }}</h2>
+        <p class="bio">{{ profile.Bio }}</p>
+        <img class="profile-picture" src="{{ profile.ProfilePicture.url }}" alt="Profile Picture">
+        <a style="text-decoration: none; margin-left: 50px" class="unfollow-button" href="{% url 'post_list' %}">post list</a>
+    </div>
+
+    <div class="following">
+        <h1 class="following-title">Following</h1>
+        {% for p in profiles_follow %}
+            <div class="following-item">
+                <h3 class="following-username">{{ p.User.username }}</h3>
+                <p class="following-bio">{{ p.Bio }}</p>
+                <img class="following-picture" src="{{ p.ProfilePicture.url }}" alt="Profile">
+                <form method="post" action="{% url 'unfollow_user' profile.User.id p.User.pk %}">
+                    {% csrf_token %}
+                    <button class="unfollow-button" type="submit">Unfollow</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="not-following">
+        <h1 class="not-following-title">Not Following</h1>
+        {% for p in profiles_unfollow %}
+            <div class="not-following-item">
+                <h3 class="not-following-username">{{ p.User.username }}</h3>
+                <p class="not-following-bio">{{ p.Bio }}</p>
+                <img class="not-following-picture" src="{{ p.ProfilePicture.url }}" alt="Profile Picture">
+                <form method="post" action="{% url 'follow_user' profile.User.id p.User.pk %}">
+                    {% csrf_token %}
+                    <button class="follow-button" type="submit">Follow</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+    {% if isUpdate %}
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h2 class="modal-title">Edit Profile</h2>
+                <form method="POST" action="{% url 'edit_profile' profile.id %}">
+                    {% csrf_token %}
+                    {{ formProfile.as_p }}
+                    <button class="btn update-button" type="submit" onclick="return confirm('Are you sure you want to update this profile?');">Update</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</body>
+</html>

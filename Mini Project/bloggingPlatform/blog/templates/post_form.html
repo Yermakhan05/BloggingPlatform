@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Form</title>
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+</head>
+    <body>
+        <h1 class="title">New Post</h1>
+        {% load form_tags %}
+        <form method="POST" class="mainForm" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.Title.label_tag }}
+                {{ form.Title|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ form.Content.label_tag }}
+                {{ form.Content|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                {{ form.Author.label_tag }}
+                {{ form.Author|add_class:"form-control-select" }}
+            </div>
+            <button class="btn" type="submit">Post</button>
+        </form>
+    </body>
+</html>

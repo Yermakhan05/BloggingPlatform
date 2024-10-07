@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post List</title>
+    <link rel="stylesheet" href="{% static 'posts.css' %} ">
+    <style>
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pagination .step-links {
+            display: inline-block;
+        }
+
+        .pagination a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination .current {
+            font-weight: bold;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+        .toButtons{
+            display: inline-block;
+            padding: 8px 15px;
+            margin-right: 10px;
+            background-color: #2196f3;
+            color: white; text-decoration: none;
+            border-radius: 5px;transition: background-color 0.3s ease;
+            margin-bottom: 30px
+        }
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-form button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Post List</h1>
+        {% if user.is_authenticated %}
+            <p style="font-size: 18px; font-weight: bold; color: #007BFF;;margin-bottom: 10px;">Welcome, {{ user.username }}!</p>
+            <a class="toButtons" href="{% url 'profile' user.id %}">Profile</a>
+            <a href="{% url 'post_form' %}" class="toButtons">New post</a>
+            <a class="toButtons" href="{% url 'logout' %}">Logout</a>
+            <form method="GET" action="{% url 'post_list' %}" class="search-form">
+                <label>
+                    <input type="text" name="q" placeholder="Search posts..." value="{{ query|default_if_none:'' }}">
+                </label>
+                <button type="submit">Search</button>
+            </form>
+        {% else %}
+            <a class="toButtons" href="{% url 'login' %}">Login</a>
+        {% endif %}
+        {% if page_obj %}
+        <div class="row">
+            {% for post in page_obj %}
+                <div class="postList">
+                    <div class="single-blog-item">
+                        <div class="blog-thumbnail">
+                            <img src="{% static '94971573-abstract-lines-pattern-seamless-pattern-with-vertical-lines-and-halftone-transition-vector.jpg' %}" style="width: 370px; height: 275px; border-radius: 5px;" alt="postImage">
+                        </div>
+                        <div class="blog-content">
+                            <h4>
+                                <a class="postTitle" href="{% url 'post_detail' post.pk %}">{{ post.Title }}</a>
+                            </h4>
+                            <p>{{ post.Content }}</p>
+                            <a href="{% url 'post_detail' post.pk %}" class="btnMore">Read More</a>
+                        </div>
+                        <span class="dateView">
+                            <strong>Published on:</strong> {{ post.Created_at|date:"F j, Y" }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last</a>
+                {% endif %}
+            </span>
+        </div>
+        {% else %}
+            <p>No posts are available at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
