@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     User = models.OneToOneField(User, on_delete=models.CASCADE)
     Bio = models.TextField()
-    ProfilePicture = models.ImageField(upload_to='profile_pictures/')
+    # ProfilePicture = models.ImageField(upload_to='profile_pictures/')
 
 
 class Follow(models.Model):

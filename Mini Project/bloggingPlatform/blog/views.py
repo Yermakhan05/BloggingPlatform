@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+import requests
 
 from blog.form import PostForm, PostUpdateForm, CommentForm
 from blog.models import Post, Comment
@@ -53,13 +54,23 @@ def post_form(request):
         form = PostForm(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.Created_at = datetime.datetime.now()
+            new_post.created_at = datetime.datetime.now()
             new_post.save()
+
+            CLOUD_FUNCTION_URL = "https://us-central1-ivory-nectar-472306-i0.cloudfunctions.net/log_new_post"
+
+            try:
+                requests.post(CLOUD_FUNCTION_URL, json={
+                    "title": new_post.Title,
+                    "content": new_post.Content,
+                })
+            except Exception as e:
+                print(f"Cloud Function error: {e}")
+
             return redirect('post_list')
-        else:
-            return render(request, 'post_form.html', {'form': form})
     else:
         form = PostForm()
+
     return render(request, 'post_form.html', {'form': form})
 
 
